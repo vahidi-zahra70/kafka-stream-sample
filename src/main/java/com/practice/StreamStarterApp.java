@@ -24,6 +24,7 @@ public class StreamStarterApp {
         KStreamBuilder builder = new KStreamBuilder();
         KStream<String, String> textLines = builder.stream("word-count-input");
 
+
         KTable<String, Long> wordCounts = textLines
                 // Split each text line, by whitespace, into words.
                 .flatMapValues(value -> Arrays.asList(value.toLowerCase().split(" ")))
@@ -35,7 +36,6 @@ public class StreamStarterApp {
 
         // writes the running counts as a changelog stream to the output topic.
         wordCounts.to(Serdes.String(), Serdes.Long(), "word-count-output");
-//        wordCounts.toStream().to("streams-wordcount-output", Produced.with(Serdes.String(), Serdes.Long()));
 
         KafkaStreams kafkaStreams=new KafkaStreams(builder,properties);
         kafkaStreams.start();
