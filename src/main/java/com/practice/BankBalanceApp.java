@@ -43,9 +43,9 @@ public class BankBalanceApp {
         KStreamBuilder builder = new KStreamBuilder();
 
 
-        final Serializer<JsonNode> serializer = new JsonSerializer();
-        final Deserializer<JsonNode> deserializer = new JsonDeserializer();
-        final Serde<JsonNode> serde = Serdes.serdeFrom(serializer, deserializer);
+//        final Serializer<JsonNode> serializer = new JsonSerializer();
+//        final Deserializer<JsonNode> deserializer = new JsonDeserializer();
+//        final Serde<JsonNode> serde = Serdes.serdeFrom(serializer, deserializer);
 
         //Solution 2
         //read as kTable and then write as kTable
