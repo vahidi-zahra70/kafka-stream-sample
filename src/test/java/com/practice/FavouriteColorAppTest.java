@@ -1,7 +1,6 @@
 package com.practice;
 
 import org.apache.kafka.common.serialization.LongDeserializer;
-import org.apache.kafka.common.serialization.LongSerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.common.serialization.Serdes;
@@ -11,6 +10,7 @@ import org.apache.kafka.streams.TestOutputTopic;
 import org.apache.kafka.streams.TopologyTestDriver;
 import org.apache.kafka.streams.KeyValue;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +34,7 @@ class FavouriteColorAppTest {
 
         topologyTestDriver =
                 new TopologyTestDriver(
-                        new FavouriteColorApp_2().createTopology(),
+                        new FavouriteColorApp().createTopology(),
                         properties
                 );
 
@@ -82,6 +82,7 @@ class FavouriteColorAppTest {
         assertKeyValue(readOutputRecord(), "orange", 0L);
         assertKeyValue(readOutputRecord(), "yellow", 2L);
         assertKeyValue(readOutputRecord(), "white", 1L);
+        Assertions.assertTrue(outputTopic.isEmpty());
     }
 
     private void assertKeyValue(KeyValue<String, Long> actual, String expectedKey, Long expectedValue) {
