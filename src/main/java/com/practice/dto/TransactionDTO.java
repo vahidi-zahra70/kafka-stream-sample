@@ -11,6 +11,8 @@ import java.time.Instant;
 @Setter
 public class TransactionDTO {
 
+    private String uuid;
+
     private String name;
 
     private Long amount;

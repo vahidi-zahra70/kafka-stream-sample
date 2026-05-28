@@ -77,13 +77,32 @@ class BankBalanceAppTest {
         this.pushNewRecord(TransactionDTO.builder().name("mahdi").amount(100L).time(Instant.now()).build());
 
         // then
-        assertKeyValue(readOutputRecord(),"zahra", BalanceDTO.builder()
-                .balance(100L).count(1L).build());
+        assertKeyValue(readOutputRecord(), "zahra", BalanceDTO.builder().balance(100L).count(1L).build());
+        assertKeyValue(readOutputRecord(), "ali", BalanceDTO.builder().balance(200L).count(1L).build());
+        assertKeyValue(readOutputRecord(), "zahra", BalanceDTO.builder().balance(200L).count(2L).build());
+        assertKeyValue(readOutputRecord(), "mahdi", BalanceDTO.builder().balance(100L).count(1L).build());
 
-//        Assertions.assertTrue(outputTopic.isEmpty());
+        Assertions.assertTrue(outputTopic.isEmpty());
     }
 
-    private void assertKeyValue(KeyValue<String,BalanceDTO> actual,String expectedKey, BalanceDTO expectedBalance) {
+    @Test
+    void given_nullValues_when_push_then_mustCount() {
+        // when
+        this.pushNewRecord(null);
+        this.pushNewRecord(TransactionDTO.builder().name("zahra").time(Instant.now()).amount(100L).build());
+        this.pushNewRecord(TransactionDTO.builder().name("ali").amount(200L).time(Instant.now()).build());
+        this.pushNewRecord(TransactionDTO.builder().name("zahra").amount(100L).time(Instant.now()).build());
+        this.pushNewRecord(TransactionDTO.builder().name("mahdi").amount(100L).time(Instant.now()).build());
+
+        // then
+        assertKeyValue(readOutputRecord(), "zahra", BalanceDTO.builder().balance(100L).count(1L).build());
+        assertKeyValue(readOutputRecord(), "ali", BalanceDTO.builder().balance(200L).count(1L).build());
+        assertKeyValue(readOutputRecord(), "zahra", BalanceDTO.builder().balance(200L).count(2L).build());
+        assertKeyValue(readOutputRecord(), "mahdi", BalanceDTO.builder().balance(100L).count(1L).build());
+        Assertions.assertTrue(outputTopic.isEmpty());
+    }
+
+    private void assertKeyValue(KeyValue<String, BalanceDTO> actual, String expectedKey, BalanceDTO expectedBalance) {
         assertEquals(expectedKey, actual.key);
         assertEquals(expectedBalance.getBalance(), actual.value.getBalance());
         assertEquals(expectedBalance.getCount(), actual.value.getCount());

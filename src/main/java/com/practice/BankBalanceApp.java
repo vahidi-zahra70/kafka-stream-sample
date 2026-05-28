@@ -31,7 +31,7 @@ public class BankBalanceApp {
         StreamsBuilder builder = new StreamsBuilder();
 
         Serde<TransactionDTO> transactionSerde =
-                new JsonSerde<>(TransactionDTO.class,Util.OBJECT_MAPPER);
+                new JsonSerde<>(TransactionDTO.class, Util.OBJECT_MAPPER);
 
         Serde<BalanceDTO> balanceSerde =
                 new JsonSerde<>(BalanceDTO.class, Util.OBJECT_MAPPER);
@@ -40,11 +40,12 @@ public class BankBalanceApp {
         KStream<String, TransactionDTO> transactionsStream = builder.stream("bank-balance-input", Consumed.with(Serdes.String(), transactionSerde));
 
         KTable<String, BalanceDTO> balance = transactionsStream
+                .filter((key, transactionDTO) -> transactionDTO != null)
                 .selectKey((nullKey, transactionDTO) -> transactionDTO.getName())
                 .groupByKey(Grouped.with(Serdes.String(), transactionSerde))
-                .aggregate(BalanceDTO::new, (key, value, currentAggBalance) -> {
-                            currentAggBalance.addTransaction(value);
-
+                .aggregate(BalanceDTO::new, (key, transactionDTO, currentAggBalance) -> {
+                            currentAggBalance.addTransaction(transactionDTO);
+                    log.info(">>>>>>>>>>>>>>>> uuid {}", transactionDTO.getUuid());
                             return currentAggBalance;
                         },
                         Materialized.<String, BalanceDTO, KeyValueStore<Bytes, byte[]>>as("balance")
